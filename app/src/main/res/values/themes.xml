@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.NovToDoList" parent="android:Theme.Material.NoTitleBar">
+        <item name="android:windowBackground">#FF12101E</item>
+        <item name="android:statusBarColor">#FF12101E</item>
+        <item name="android:navigationBarColor">#FF12101E</item>
+    </style>
+</resources>

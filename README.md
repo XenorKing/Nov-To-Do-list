@@ -1,2 +1,29 @@
-# Nov-To-Do-list
-A to-do list app with Firebase Auth, Firestore, and push notifications
+# novTo-Do List
+
+Приложение для списка дел с Firebase авторизацией, Firestore базой данных и FCM уведомлениями.
+
+## Стек
+- **Kotlin** + Jetpack Compose
+- **Firebase Auth** — вход по email/паролю
+- **Firestore** — синхронизация задач между устройствами в реальном времени
+- **FCM** — push-уведомления о выполнении задач
+- **Hilt** — DI
+- **Navigation Compose** — навигация
+
+## Функции
+- Вход / регистрация / сброс пароля
+- Главная: задачи на сегодня с поиском
+- Все задачи: все дни, фильтрация, быстрое удаление
+- Профиль: аватар, настройки, выход
+- О приложении
+- Синхронизация между устройствами (Firestore realtime)
+- Уведомление когда другой пользователь выполнил задачу
+
+## Сборка
+GitHub Actions автоматически собирает APK при каждом push в `main`.
+
+**Требования:**
+- Android 8.0+ (API 26)
+
+## Установка google-services.json
+Положите файл `google-services.json` (из Firebase Console) в папку `app/`.

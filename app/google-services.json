@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "223427059414",
+    "project_id": "novto-do-list-92e9e",
+    "storage_bucket": "novto-do-list-92e9e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223427059414:android:08c1cf539b0882af40f377",
+        "android_client_info": {
+          "package_name": "com.novaroject.novtodolist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAal3wElQ48Pr1-0r6E7DuoxVpUpkLOUqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

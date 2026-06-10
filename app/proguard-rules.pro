@@ -1,0 +1,4 @@
+-keep class com.google.firebase.** { *; }
+-keep class com.novaroject.novtodolist.data.model.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
