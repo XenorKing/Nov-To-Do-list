@@ -1,6 +1,8 @@
 package com.novaroject.novtodolist.auth.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -8,67 +10,107 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.novaroject.novtodolist.auth.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResetPasswordScreen(onBack: () -> Unit, vm: AuthViewModel = hiltViewModel()) {
+    val Purple = Color(0xFF7B5CF5)
+    val Cyan   = Color(0xFF00D4E8)
+
     var email by remember { mutableStateOf("") }
     val state by vm.state.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Сброс пароля") },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, null) } }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF12101E))
+            .padding(horizontal = 28.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        if (state.success) {
+            // ── Success state ──
+            Box(
+                modifier = Modifier
+                    .size(84.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color(0xFF1C1830)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.MarkEmailRead, null, tint = Cyan, modifier = Modifier.size(44.dp))
+            }
+            Spacer(Modifier.height(24.dp))
+            Text("Письмо отправлено!", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Spacer(Modifier.height(10.dp))
+            Text(
+                "Проверьте почту $email\nи перейдите по ссылке для сброса пароля.",
+                color = Color(0xFF8A8A9A), fontSize = 14.sp,
+                textAlign = TextAlign.Center
             )
-        }
-    ) { pad ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(pad).padding(horizontal = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (state.success) {
-                Icon(Icons.Default.MarkEmailRead, null, modifier = Modifier.size(72.dp),
-                    tint = MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.height(16.dp))
-                Text("Письмо отправлено!", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(8.dp))
-                Text("Проверьте почту $email и следуйте инструкции для сброса пароля.",
-                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
-                Spacer(Modifier.height(24.dp))
-                Button(onClick = onBack, shape = MaterialTheme.shapes.large,
-                    modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Назад") }
-            } else {
-                Text("Введите email — отправим ссылку для сброса пароля.",
-                    style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-                Spacer(Modifier.height(24.dp))
-                OutlinedTextField(
-                    value = email, onValueChange = { email = it },
-                    label = { Text("Email") }, leadingIcon = { Icon(Icons.Default.Email, null) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.large
+            Spacer(Modifier.height(32.dp))
+            Button(
+                onClick = onBack,
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Purple)
+            ) { Text("Назад", fontWeight = FontWeight.SemiBold, color = Color.White) }
+        } else {
+            // ── Reset form ──
+            Box(
+                modifier = Modifier
+                    .size(84.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color(0xFF1C1830)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("N", fontSize = 42.sp, fontWeight = FontWeight.ExtraBold, color = Cyan)
+            }
+            Spacer(Modifier.height(20.dp))
+            Text("Сброс пароля", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Spacer(Modifier.height(8.dp))
+            Text("Введите email — отправим ссылку для восстановления",
+                color = Color(0xFF8A8A9A), fontSize = 14.sp, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(36.dp))
+
+            NovTextField(
+                value = email, onValueChange = { email = it },
+                placeholder = "Email",
+                leadingIcon = { Icon(Icons.Default.Email, null, tint = Color(0xFF8A8A9A), modifier = Modifier.size(20.dp)) },
+                keyboardType = KeyboardType.Email
+            )
+
+            state.error?.let {
+                Text(it, color = MaterialTheme.colorScheme.error,
+                    fontSize = 12.sp, modifier = Modifier.padding(vertical = 8.dp))
+            }
+
+            Spacer(Modifier.height(20.dp))
+            Button(
+                onClick = { vm.resetPassword(email) },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                enabled = !state.loading && email.isNotBlank(),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Purple,
+                    disabledContainerColor = Color(0xFF2D2845)
                 )
-                state.error?.let {
-                    Text(it, color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 8.dp))
-                }
-                Spacer(Modifier.height(20.dp))
-                Button(
-                    onClick = { vm.resetPassword(email) },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    enabled = !state.loading && email.isNotBlank(),
-                    shape = MaterialTheme.shapes.large
-                ) {
-                    if (state.loading) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
-                    else Text("Отправить", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                }
+            ) {
+                if (state.loading)
+                    CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp, color = Color.White)
+                else
+                    Text("Отправить", fontWeight = FontWeight.SemiBold, color = Color.White)
+            }
+            Spacer(Modifier.height(20.dp))
+            TextButton(onClick = onBack) {
+                Text("← Назад к входу", color = Purple, fontSize = 14.sp, fontWeight = FontWeight.Medium)
             }
         }
     }

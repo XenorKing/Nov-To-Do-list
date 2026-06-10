@@ -19,18 +19,28 @@ class AuthRepository @Inject constructor(
 
     suspend fun login(email: String, password: String): Result<FirebaseUser> = runCatching {
         val r = auth.signInWithEmailAndPassword(email, password).await()
-        refreshFcmToken(r.user!!.uid)
+        runCatching { refreshFcmToken(r.user!!.uid) }
         r.user!!
     }
 
     suspend fun register(name: String, email: String, password: String): Result<FirebaseUser> = runCatching {
+        // 1. Create Firebase Auth account
         val r = auth.createUserWithEmailAndPassword(email, password).await()
         val user = r.user!!
-        user.updateProfile(userProfileChangeRequest { displayName = name }).await()
-        val token = runCatching { FirebaseMessaging.getInstance().token.await() }.getOrNull()
-        db.collection("users").document(user.uid)
-            .set(UserProfile(uid = user.uid, displayName = name, email = email, fcmToken = token))
-            .await()
+
+        // 2. Update display name
+        runCatching {
+            user.updateProfile(userProfileChangeRequest { displayName = name }).await()
+        }
+
+        // 3. Save profile to Firestore (non-critical — silently ignored if Firestore rules deny)
+        runCatching {
+            val token = runCatching { FirebaseMessaging.getInstance().token.await() }.getOrNull()
+            db.collection("users").document(user.uid)
+                .set(UserProfile(uid = user.uid, displayName = name, email = email, fcmToken = token))
+                .await()
+        }
+
         user
     }
 
@@ -42,6 +52,6 @@ class AuthRepository @Inject constructor(
 
     private suspend fun refreshFcmToken(uid: String) {
         val token = runCatching { FirebaseMessaging.getInstance().token.await() }.getOrNull() ?: return
-        db.collection("users").document(uid).update("fcmToken", token)
+        runCatching { db.collection("users").document(uid).update("fcmToken", token).await() }
     }
 }
