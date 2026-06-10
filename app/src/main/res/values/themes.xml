@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.NovToDoList" parent="android:Theme.Material.NoTitleBar">
+    <!-- Base theme: dark, no action bar — compatible with Jetpack Compose -->
+    <style name="Theme.NovToDoList" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">#FF12101E</item>
         <item name="android:statusBarColor">#FF12101E</item>
         <item name="android:navigationBarColor">#FF12101E</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 </resources>
