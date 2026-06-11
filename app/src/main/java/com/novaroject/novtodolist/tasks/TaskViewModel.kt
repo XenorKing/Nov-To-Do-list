@@ -1,12 +1,15 @@
 package com.novaroject.novtodolist.tasks
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.novaroject.novtodolist.data.model.Task
 import com.novaroject.novtodolist.data.repository.TaskRepository
+import com.novaroject.novtodolist.notifications.TaskReminderWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +23,8 @@ data class TasksUiState(
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val repo: TaskRepository,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _today = MutableStateFlow(TasksUiState())
@@ -57,7 +61,17 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             _addResult.value = null
             repo.addTask(Task(title = title, description = description, dueDate = dueDate, priority = priority))
-                .onSuccess { _addResult.value = "OK" }
+                .onSuccess { taskId ->
+                    _addResult.value = "OK"
+                    if (dueDate != null) {
+                        TaskReminderWorker.schedule(
+                            context       = context,
+                            taskId        = taskId,
+                            title         = title,
+                            dueDateMillis = dueDate.toDate().time
+                        )
+                    }
+                }
                 .onFailure { _addResult.value = it.message ?: "Ошибка сохранения задачи" }
         }
 
@@ -66,9 +80,13 @@ class TaskViewModel @Inject constructor(
     fun completeTask(id: String) = viewModelScope.launch {
         val name = auth.currentUser?.displayName ?: "Пользователь"
         repo.completeTask(id, name)
+        TaskReminderWorker.cancel(context, id)
     }
 
-    fun deleteTask(id: String) = viewModelScope.launch { repo.deleteTask(id) }
+    fun deleteTask(id: String) = viewModelScope.launch {
+        repo.deleteTask(id)
+        TaskReminderWorker.cancel(context, id)
+    }
 
     fun updateTask(task: Task) = viewModelScope.launch { repo.updateTask(task) }
 }

@@ -142,6 +142,33 @@ fun TodayTasksScreen(
             }
         }
 
+        // ─── Error Banner ───
+        if (state.error != null) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = Color(0xFF2A0A14)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.ErrorOutline, null,
+                        tint = Color(0xFFFF2D78), modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        state.error,
+                        color = Color(0xFFFF2D78), fontSize = 12.sp,
+                        modifier = Modifier.weight(1f), lineHeight = 16.sp
+                    )
+                }
+            }
+        }
+
         // ─── Search ───
         TextField(
             value = search, onValueChange = { search = it },
@@ -167,7 +194,7 @@ fun TodayTasksScreen(
             state.loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = NeonCyan, strokeWidth = 2.dp)
             }
-            tasks.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            tasks.isEmpty() && state.error == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("✦", fontSize = 48.sp, color = NeonCyan.copy(alpha = 0.3f))
                     Spacer(Modifier.height(12.dp))
@@ -185,7 +212,7 @@ fun TodayTasksScreen(
                     }
                 }
             }
-            else -> LazyColumn(
+            tasks.isNotEmpty() -> LazyColumn(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -194,6 +221,13 @@ fun TodayTasksScreen(
                         onDelete = { vm.deleteTask(task.id) })
                 }
                 item { Spacer(Modifier.height(80.dp)) }
+            }
+            else -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("✦", fontSize = 48.sp, color = Color(0xFFFF2D78).copy(alpha = 0.3f))
+                    Spacer(Modifier.height(12.dp))
+                    Text("Проверьте подключение к интернету", color = Color(0xFF7878AA), fontSize = 14.sp)
+                }
             }
         }
     }

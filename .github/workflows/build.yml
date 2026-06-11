@@ -35,6 +35,32 @@ jobs:
         run: |
           if [ -n "$GOOGLE_SERVICES_JSON" ]; then
             echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
+            echo "✅ google-services.json установлен из секрета"
+          elif [ -f "app/google-services.json" ]; then
+            echo "✅ google-services.json уже есть в репозитории"
+          else
+            echo "⚠️  google-services.json отсутствует — создаём заглушку для сборки"
+            cat > app/google-services.json << 'EOF'
+          {
+            "project_info": {
+              "project_number": "000000000000",
+              "project_id": "placeholder-project",
+              "storage_bucket": "placeholder-project.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+                  "android_client_info": { "package_name": "com.novaroject.novtodolist" }
+                },
+                "oauth_client": [],
+                "api_key": [{ "current_key": "placeholder_key" }],
+                "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
           fi
 
       - name: Deploy Firestore Security Rules
@@ -50,8 +76,8 @@ jobs:
               --non-interactive
           else
             echo "⚠️  FIREBASE_TOKEN not set — skipping Firestore rules deploy."
-            echo "    Add FIREBASE_TOKEN to GitHub Secrets to auto-deploy rules."
             echo "    Get token with: npx firebase-tools login:ci"
+            echo "    Add as GitHub Secret: FIREBASE_TOKEN"
           fi
 
       - name: Build Release APK
@@ -79,15 +105,15 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0-build${{ github.run_number }}
-          name: "novTo-Do List v1.0.0 (Build ${{ github.run_number }})"
+          tag_name: build-${{ github.run_number }}
+          name: "novTo-Do List (Build ${{ github.run_number }})"
           body: |
-            ## novTo-Do List — Cyberpunk 2026
-            
-            ### Изменения
-            - 🐛 Исправлен экран «О приложении» (текст больше не налезает)
-            - ✨ Новая шапка на экранах Главная / Все задачи
-            - 🔒 Правила Firestore (исправлен PERMISSION_DENIED)
-            - 🎨 Прогресс-бар и статистика в шапке
+            ## novTo-Do List — сборка ${{ github.run_number }}
+
+            ### Изменения v1.1.0
+            - 🔔 Локальные уведомления — напоминание за 30 минут до задачи
+            - 🐛 Ошибки Firestore теперь показываются в приложении
+            - 🔒 Правила Firestore задеплоены автоматически (если есть FIREBASE_TOKEN)
+            - 🎨 Улучшен экран «О приложении»
           files: apk/*.apk
           token: ${{ secrets.GITHUB_TOKEN }}
