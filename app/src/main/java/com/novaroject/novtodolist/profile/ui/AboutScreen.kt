@@ -68,7 +68,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 AboutInfoRow(Icons.Default.Tag,      Color(0xFFA855F7), "Версия",       "1.0.0")
                 AboutInfoRow(Icons.Default.Business, Color(0xFF00B4FF), "Компания",     "Nova Project")
                 AboutInfoRow(Icons.Default.Code,     Color(0xFF00E5FF), "Разработчик",  "XenorKing")
-                AboutInfoRow(Icons.Default.Brush,    Color(0xFF9D00FF), "Дизайнер UI",  "Mitoka",  last = true)
+                AboutInfoRow(Icons.Default.Brush,    Color(0xFF9D00FF), "Дизайнер UI",  "Mitoka", last = true)
             }
 
             Spacer(Modifier.height(20.dp))
@@ -100,12 +100,21 @@ fun AboutScreen(onBack: () -> Unit) {
 }
 
 @Composable
-private fun AboutSection(title: String, content: @Composable () -> Unit) {
+private fun AboutSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(Modifier.fillMaxWidth()) {
-        Text(title, color = Color(0xFF6666AA), fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
-            letterSpacing = 1.2.sp, modifier = Modifier.padding(start = 4.dp, bottom = 8.dp))
-        Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp),
-            color = Color(0xFF100D20)) { content() }
+        Text(
+            title, color = Color(0xFF6666AA), fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
+            letterSpacing = 1.2.sp, modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+        )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            color = Color(0xFF100D20)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                content()
+            }
+        }
     }
 }
 
@@ -123,8 +132,10 @@ private fun AboutInfoRow(
         ) { Icon(icon, null, tint = iconBg, modifier = Modifier.size(18.dp)) }
         Spacer(Modifier.width(12.dp))
         Text(label, fontWeight = FontWeight.Medium, color = Color.White, modifier = Modifier.weight(1f))
-        Text(value, color = Color(0xFF8888AA), fontSize = 14.sp, maxLines = 1,
-            overflow = TextOverflow.Ellipsis)
+        Text(
+            value, color = Color(0xFF8888AA), fontSize = 14.sp, maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
     if (!last) HorizontalDivider(color = Color(0xFF1A1730), modifier = Modifier.padding(start = 64.dp, end = 16.dp))
 }
@@ -139,15 +150,16 @@ private fun AboutLinkRow(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(Modifier.size(42.dp).clip(RoundedCornerShape(12.dp)).background(iconBg),
-                contentAlignment = Alignment.Center) {
+            Box(
+                Modifier.size(42.dp).clip(RoundedCornerShape(12.dp)).background(iconBg),
+                contentAlignment = Alignment.Center
+            ) {
                 Icon(icon, null, tint = Color.White, modifier = Modifier.size(22.dp))
             }
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(title, color = Color(0xFF9999BB), fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
-                Text(subtitle, color = Color.White, fontSize = 14.sp, maxLines = 1,
-                    overflow = TextOverflow.Ellipsis)
+                Text(subtitle, color = Color.White, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Icon(Icons.Default.OpenInNew, null, tint = Color(0xFF5555AA), modifier = Modifier.size(16.dp))
         }
