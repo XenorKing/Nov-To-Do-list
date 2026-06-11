@@ -37,6 +37,23 @@ jobs:
             echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
           fi
 
+      - name: Deploy Firestore Security Rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          if [ -n "$FIREBASE_TOKEN" ]; then
+            echo "Deploying Firestore rules..."
+            npx firebase-tools@latest deploy \
+              --only firestore:rules \
+              --project novto-do-list-92e9e \
+              --token "$FIREBASE_TOKEN" \
+              --non-interactive
+          else
+            echo "⚠️  FIREBASE_TOKEN not set — skipping Firestore rules deploy."
+            echo "    Add FIREBASE_TOKEN to GitHub Secrets to auto-deploy rules."
+            echo "    Get token with: npx firebase-tools login:ci"
+          fi
+
       - name: Build Release APK
         run: ./gradlew assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
 
@@ -65,15 +82,12 @@ jobs:
           tag_name: v1.0.0-build${{ github.run_number }}
           name: "novTo-Do List v1.0.0 (Build ${{ github.run_number }})"
           body: |
-            ## novTo-Do List — Cyberpunk 2026 Release
+            ## novTo-Do List — Cyberpunk 2026
             
-            ### Что нового
-            - 🎨 Полный редизайн в стиле киберпанк 2026 (неоновые цвета, анимации)
-            - ✨ Анимированная обводка полей авторизации (sweep-анимация по кругу)
-            - 🔮 Плавающая нав-панель (3 кнопки: Главная / + / Все задачи)
-            - ⏰ Выбор точного времени при создании задачи
-            - 🐛 Исправлено создание задач (теперь показывает ошибку если что-то пошло не так)
-            - 📱 Экран «О приложении» в стиле NovAnime
-            - 🌟 Новая иконка приложения с неоновым свечением
+            ### Изменения
+            - 🐛 Исправлен экран «О приложении» (текст больше не налезает)
+            - ✨ Новая шапка на экранах Главная / Все задачи
+            - 🔒 Правила Firestore (исправлен PERMISSION_DENIED)
+            - 🎨 Прогресс-бар и статистика в шапке
           files: apk/*.apk
           token: ${{ secrets.GITHUB_TOKEN }}
