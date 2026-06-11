@@ -1,5 +1,6 @@
 package com.novaroject.novtodolist.tasks.ui
 
+import BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -175,7 +176,7 @@ fun AddTaskScreen(onBack: () -> Unit, vm: TaskViewModel = hiltViewModel()) {
                     onClick = { showDatePicker = true },
                     modifier = Modifier.weight(1f), shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = NeonCyan),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(0.4f))
+                    border = BorderStroke(1.dp, NeonCyan.copy(0.4f))
                 ) {
                     Icon(Icons.Default.CalendarToday, null, Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
@@ -191,7 +192,7 @@ fun AddTaskScreen(onBack: () -> Unit, vm: TaskViewModel = hiltViewModel()) {
                     modifier = Modifier.weight(1f), shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = if (hasTime) NeonPurple else Color(0xFF6666AA)),
-                    border = androidx.compose.foundation.BorderStroke(1.dp,
+                    border = BorderStroke(1.dp,
                         if (hasTime) NeonPurple.copy(0.5f) else Color(0xFF221F3A))
                 ) {
                     Icon(Icons.Default.AccessTime, null, Modifier.size(16.dp))

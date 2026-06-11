@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Иконка в стиле неонового контура на чёрном фоне.
-    Градиент: cyan → blue → purple → pink → orange → yellow-green
-    (по аналогии с референсным фото)
--->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -11,121 +6,215 @@
     android:viewportHeight="108">
 
     <!-- Чёрный фон -->
-    <path
-        android:fillColor="#000000"
-        android:pathData="M0,0 L108,0 L108,108 L0,108 Z" />
+    <path android:fillColor="#000000"
+          android:pathData="M0,0 L108,0 L108,108 L0,108 Z"/>
 
-    <!-- Градиентные определения через group + color trick:
-         Рисуем контур скруглённого квадрата и "стрелка-бумеранг" внутри
-         через overlapping полосы разных цветов, создавая эффект градиента -->
+    <!-- ДОКУМЕНТ: внешнее фиолетовое свечение (glow слой 1) -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#44007ACC"
+          android:strokeWidth="10"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M22,15 L72,15 L88,31 L88,93 L20,93 L20,15 Z"/>
 
-    <!-- ═══ ВНЕШНИЙ КОНТУР (скруглённый квадрат) ════════════════════
-         Разбиваем периметр на 4 дуги по цветам градиента           -->
+    <!-- ДОКУМЕНТ: второй слой свечения -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#66A020E0"
+          android:strokeWidth="5"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M22,15 L72,15 L88,31 L88,93 L20,93 L20,15 Z"/>
 
-    <!-- Верхняя сторона: cyan → blue -->
-    <path
-        android:strokeColor="#00EFFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M28,18 L80,18" />
-    <!-- Верхний правый угол: blue → purple -->
-    <path
-        android:strokeColor="#7B4CFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M80,18 Q92,18 92,30" />
-    <!-- Правая сторона: purple → pink -->
-    <path
-        android:strokeColor="#DD44FF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M92,30 L92,78" />
-    <!-- Нижний правый угол: pink → orange -->
-    <path
-        android:strokeColor="#FF6622"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M92,78 Q92,90 80,90" />
-    <!-- Нижняя сторона: orange → yellow-green -->
-    <path
-        android:strokeColor="#AAFF00"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M80,90 L28,90" />
-    <!-- Нижний левый угол: yellow-green → cyan -->
-    <path
-        android:strokeColor="#00EFFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M28,90 Q16,90 16,78" />
-    <!-- Левая сторона нижняя часть: cyan -->
-    <path
-        android:strokeColor="#00CCFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M16,78 L16,60" />
-    <!-- Разрыв на левой стороне (как на фото) -->
-    <path
-        android:strokeColor="#00BBFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M16,50 L16,30" />
-    <!-- Верхний левый угол: cyan -->
-    <path
-        android:strokeColor="#00EFFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M16,30 Q16,18 28,18" />
+    <!-- ДОКУМЕНТ: тёмное тело -->
+    <path android:fillColor="#09071A"
+          android:pathData="M22,15 L72,15 L88,31 L88,93 L20,93 L20,15 Z"/>
 
-    <!-- Маленький штрих-разрыв на левой стороне (как на фото — короткий вертикальный отрезок) -->
-    <path
-        android:strokeColor="#00EFFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M16,54 L16,58" />
+    <!-- ДОКУМЕНТ: основной контур (фиолетово-синий неон) -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#9D4EDD"
+          android:strokeWidth="2.5"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M22,15 L72,15 L88,31 L88,93 L20,93 L20,15 Z"/>
 
-    <!-- ═══ ДИАГОНАЛЬНАЯ ЛИНИЯ (основа стрелки) ══════════════════════
-         От нижнего левого к верхнему правому — cyan → purple         -->
-    <path
-        android:strokeColor="#7B4CFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M26,82 L82,30" />
+    <!-- ЗАГНУТЫЙ УГОЛ: тёмный треугольник -->
+    <path android:fillColor="#130E28"
+          android:pathData="M72,15 L72,31 L88,31 Z"/>
 
-    <!-- ═══ СТРЕЛКА (треугольник) в центре-правой части ════════════
-         pink → orange                                               -->
-    <!-- Левая сторона треугольника -->
-    <path
-        android:strokeColor="#FF44BB"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M66,36 L46,56" />
-    <!-- Правая / нижняя сторона треугольника -->
-    <path
-        android:strokeColor="#FF6622"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M86,28 L66,36 L76,56" />
+    <!-- ЗАГНУТЫЙ УГОЛ: свечение -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#66007ACC"
+          android:strokeWidth="5"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M72,15 L72,31 L88,31"/>
 
-    <!-- ═══ НИЖНЯЯ ЛИНИЯ диагонали продолжение (cyan) ════════════ -->
-    <path
-        android:strokeColor="#00EFFF"
-        android:strokeWidth="4.5"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M26,82 L68,78" />
+    <!-- ЗАГНУТЫЙ УГОЛ: основной контур -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#9D4EDD"
+          android:strokeWidth="2.5"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M72,15 L72,31 L88,31"/>
+
+    <!-- ══════════════════════════════════════════
+         ЗАГОЛОВОК ДОКУМЕНТА
+    ══════════════════════════════════════════ -->
+
+    <!-- Линия-заголовок: свечение -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#4400E5FF"
+          android:strokeWidth="5"
+          android:strokeLineCap="round"
+          android:pathData="M30,27 L62,27"/>
+
+    <!-- Линия-заголовок: основная (яркий циан) -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#00E5FF"
+          android:strokeWidth="2.2"
+          android:strokeLineCap="round"
+          android:pathData="M30,27 L62,27"/>
+
+    <!-- ══════════════════════════════════════════
+         ЗАДАЧА 1 — ВЫПОЛНЕНА (зелёная галочка)
+    ══════════════════════════════════════════ -->
+
+    <!-- Чекбокс: свечение -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#3339FF14"
+          android:strokeWidth="5"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M30,38 L30,47 L39,47 L39,38 Z"/>
+
+    <!-- Чекбокс: тёмное тело -->
+    <path android:fillColor="#081A08"
+          android:pathData="M30,38 L30,47 L39,47 L39,38 Z"/>
+
+    <!-- Чекбокс: контур неоново-зелёный -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#39FF14"
+          android:strokeWidth="1.8"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M30,38 L30,47 L39,47 L39,38 Z"/>
+
+    <!-- Галочка: свечение -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#5539FF14"
+          android:strokeWidth="6"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M32,42.5 L35.5,46 L41,39.5"/>
+
+    <!-- Галочка: основная -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#39FF14"
+          android:strokeWidth="2.2"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M32,42.5 L35.5,46 L41,39.5"/>
+
+    <!-- Текст задачи 1: зачёркнутый серый -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#3A3A5C"
+          android:strokeWidth="2"
+          android:strokeLineCap="round"
+          android:pathData="M44,42.5 L78,42.5"/>
+
+    <!-- Зачёркивание: зелёное с прозрачностью -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#5539FF14"
+          android:strokeWidth="1.5"
+          android:strokeLineCap="round"
+          android:pathData="M44,42.5 L78,42.5"/>
+
+    <!-- ══════════════════════════════════════════
+         ЗАДАЧА 2 — АКТИВНАЯ (циановый)
+    ══════════════════════════════════════════ -->
+
+    <!-- Чекбокс: свечение -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#3300E5FF"
+          android:strokeWidth="5"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M30,55 L30,64 L39,64 L39,55 Z"/>
+
+    <!-- Чекбокс: тёмное тело -->
+    <path android:fillColor="#030D12"
+          android:pathData="M30,55 L30,64 L39,64 L39,55 Z"/>
+
+    <!-- Чекбокс: контур циановый -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#00E5FF"
+          android:strokeWidth="1.8"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M30,55 L30,64 L39,64 L39,55 Z"/>
+
+    <!-- Текст задачи 2: свечение -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#3300E5FF"
+          android:strokeWidth="5"
+          android:strokeLineCap="round"
+          android:pathData="M44,59.5 L80,59.5"/>
+
+    <!-- Текст задачи 2: основной (яркий циан) -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#00E5FF"
+          android:strokeWidth="2"
+          android:strokeLineCap="round"
+          android:pathData="M44,59.5 L80,59.5"/>
+
+    <!-- ══════════════════════════════════════════
+         ЗАДАЧА 3 — АКТИВНАЯ (фиолетовый)
+    ══════════════════════════════════════════ -->
+
+    <!-- Чекбокс: свечение -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#339D4EDD"
+          android:strokeWidth="5"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M30,72 L30,81 L39,81 L39,72 Z"/>
+
+    <!-- Чекбокс: тёмное тело -->
+    <path android:fillColor="#060310"
+          android:pathData="M30,72 L30,81 L39,81 L39,72 Z"/>
+
+    <!-- Чекбокс: контур фиолетовый -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#9D4EDD"
+          android:strokeWidth="1.8"
+          android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M30,72 L30,81 L39,81 L39,72 Z"/>
+
+    <!-- Текст задачи 3: свечение -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#339D4EDD"
+          android:strokeWidth="5"
+          android:strokeLineCap="round"
+          android:pathData="M44,76.5 L70,76.5"/>
+
+    <!-- Текст задачи 3: основной (фиолетовый) -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#9D4EDD"
+          android:strokeWidth="2"
+          android:strokeLineCap="round"
+          android:pathData="M44,76.5 L70,76.5"/>
+
+    <!-- ══════════════════════════════════════════
+         ДЕКОР: блик в углу документа (циановый)
+    ══════════════════════════════════════════ -->
+    <path android:fillColor="#00E5FF"
+          android:pathData="M22,15 m0,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"
+          android:alpha="0.7"/>
+
+    <!-- Маленький светящийся круг нижний правый -->
+    <path android:fillColor="#9D4EDD"
+          android:pathData="M85,90 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"
+          android:alpha="0.8"/>
 
 </vector>
