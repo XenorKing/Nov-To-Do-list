@@ -24,24 +24,36 @@ class AuthRepository @Inject constructor(
     }
 
     suspend fun register(name: String, email: String, password: String): Result<FirebaseUser> = runCatching {
-        // 1. Create Firebase Auth account
         val r = auth.createUserWithEmailAndPassword(email, password).await()
         val user = r.user!!
 
-        // 2. Update display name
+        // Обновляем displayName = никнейм
         runCatching {
             user.updateProfile(userProfileChangeRequest { displayName = name }).await()
         }
 
-        // 3. Save profile to Firestore (non-critical — silently ignored if Firestore rules deny)
+        // Сохраняем профиль в Firestore
         runCatching {
             val token = runCatching { FirebaseMessaging.getInstance().token.await() }.getOrNull()
             db.collection("users").document(user.uid)
-                .set(UserProfile(uid = user.uid, displayName = name, email = email, fcmToken = token))
+                .set(UserProfile(uid = user.uid, displayName = name, nickname = name, email = email, fcmToken = token))
                 .await()
         }
 
         user
+    }
+
+    // Fix #6 — обновление никнейма в профиле
+    suspend fun updateDisplayName(newName: String): Result<Unit> = runCatching {
+        val user = auth.currentUser ?: error("Необходимо войти в аккаунт")
+        user.updateProfile(userProfileChangeRequest { displayName = newName }).await()
+        // Обновляем в Firestore тоже
+        runCatching {
+            db.collection("users").document(user.uid)
+                .update(mapOf("displayName" to newName, "nickname" to newName))
+                .await()
+        }
+        Unit
     }
 
     suspend fun resetPassword(email: String): Result<Unit> = runCatching {

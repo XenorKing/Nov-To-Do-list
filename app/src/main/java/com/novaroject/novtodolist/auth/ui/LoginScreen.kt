@@ -30,6 +30,7 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateRegister: () -> Unit,
     onNavigateReset: () -> Unit,
+    onPrivacyPolicy: () -> Unit = {},
     vm: AuthViewModel = hiltViewModel()
 ) {
     var email     by remember { mutableStateOf("") }
@@ -43,7 +44,9 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(listOf(Color(0xFF060412), DarkBg, Color(0xFF0A0520)))
+                Brush.verticalGradient(
+                    listOf(Color(0xFF060412), DarkBg, Color(0xFF0A0520))
+                )
             )
     ) {
         Column(
@@ -55,14 +58,29 @@ fun LoginScreen(
         ) {
             Spacer(Modifier.height(72.dp))
 
+            // ─── Logo ───
             Box(
                 modifier = Modifier
                     .size(86.dp)
                     .clip(RoundedCornerShape(22.dp))
-                    .background(Color(0xFF0E0C1C)),
+                    .background(
+                        Brush.linearGradient(
+                            listOf(Color(0xFF0D0B20), Color(0xFF1A1040))
+                        )
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("N", fontSize = 44.sp, fontWeight = FontWeight.ExtraBold, color = NeonCyan)
+                // Neon N with glow
+                Text(
+                    "N",
+                    fontSize = 44.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = NeonCyan
+                )
+                Box(
+                    Modifier.size(86.dp).clip(RoundedCornerShape(22.dp))
+                        .background(NeonCyan.copy(alpha = 0.04f))
+                )
             }
 
             Spacer(Modifier.height(22.dp))
@@ -72,6 +90,7 @@ fun LoginScreen(
 
             Spacer(Modifier.height(44.dp))
 
+            // ─── Поля ───
             CyberField(
                 value = email, onValueChange = { email = it },
                 placeholder = { Text("Email") },
@@ -86,27 +105,34 @@ fun LoginScreen(
                 leadingIcon = { Icon(Icons.Default.Lock, null, modifier = Modifier.size(20.dp)) },
                 trailingIcon = {
                     IconButton(onClick = { pwVisible = !pwVisible }) {
-                        Icon(if (pwVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility, null,
-                            modifier = Modifier.size(20.dp))
+                        Icon(
+                            if (pwVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            null, modifier = Modifier.size(20.dp)
+                        )
                     }
                 },
                 visualTransformation = if (pwVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardType = KeyboardType.Password
             )
 
+            // Забыли пароль
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 TextButton(onClick = onNavigateReset) {
                     Text("Забыли пароль?", color = NeonPurple, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                 }
             }
 
+            // Ошибка
             state.error?.let {
-                Text(it, color = Color(0xFFFF2D78), fontSize = 12.sp,
-                    textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 4.dp))
+                Text(
+                    it, color = Color(0xFFFF2D78), fontSize = 12.sp,
+                    textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
 
             Spacer(Modifier.height(8.dp))
 
+            // ─── Кнопка Войти ───
             Button(
                 onClick = { vm.login(email, password) },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
@@ -117,19 +143,36 @@ fun LoginScreen(
                     disabledContainerColor = Color(0xFF2A1A45)
                 )
             ) {
-                if (state.loading) CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = Color.White)
-                else Text("Войти", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
+                if (state.loading)
+                    CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = Color.White)
+                else
+                    Text("Войти", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
             }
 
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(24.dp))
 
+            // ─── Нет аккаунта? ───
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Нет аккаунта?", color = Color(0xFF8888AA), fontSize = 14.sp)
                 TextButton(onClick = onNavigateRegister, contentPadding = PaddingValues(start = 4.dp)) {
-                    Text("Зарегистрироваться", color = NeonPurple, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                    Text(
+                        "Зарегистрироваться",
+                        color = NeonPurple, fontWeight = FontWeight.SemiBold, fontSize = 14.sp
+                    )
                 }
             }
-            Spacer(Modifier.height(40.dp))
+
+            Spacer(Modifier.height(16.dp))
+
+            // ─── Политика конфиденциальности (Fix #5) ───
+            TextButton(onClick = onPrivacyPolicy) {
+                Text(
+                    "Политика конфиденциальности",
+                    color = Color(0xFF5A5A8A), fontSize = 12.sp
+                )
+            }
+
+            Spacer(Modifier.height(32.dp))
         }
     }
 }

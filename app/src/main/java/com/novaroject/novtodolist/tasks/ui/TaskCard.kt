@@ -2,6 +2,7 @@ package com.novaroject.novtodolist.tasks.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,6 +30,7 @@ import java.util.*
 @Composable
 fun TaskCard(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDetailDialog by remember { mutableStateOf(false) }
 
     val priorityColor = when (task.priority) {
         2 -> Color(0xFFFF2D78)
@@ -37,12 +39,13 @@ fun TaskCard(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
     }
     val glowColor = priorityColor.copy(alpha = if (task.isCompleted) 0.1f else 0.25f)
 
+    // ─── Delete dialog ───
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            containerColor   = Color(0xFF100D20),
+            containerColor = Color(0xFF100D20),
             title = { Text("Удалить задачу?", color = Color.White) },
-            text  = { Text("Задача будет удалена без возможности восстановления.", color = Color(0xFF8888AA)) },
+            text = { Text("Задача будет удалена без возможности восстановления.", color = Color(0xFF8888AA)) },
             confirmButton = {
                 TextButton(onClick = { onDelete(); showDeleteDialog = false }) {
                     Text("Удалить", color = Color(0xFFFF2D78))
@@ -50,6 +53,106 @@ fun TaskCard(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) { Text("Отмена", color = Color(0xFF8888AA)) }
+            }
+        )
+    }
+
+    // ─── Detail dialog (Fix #2) ───
+    if (showDetailDialog) {
+        val fmt = SimpleDateFormat("d MMMM yyyy, HH:mm", Locale("ru"))
+        AlertDialog(
+            onDismissRequest = { showDetailDialog = false },
+            containerColor = Color(0xFF100D20),
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        Modifier.width(4.dp).height(20.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(priorityColor)
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Text(task.title, color = Color.White, fontWeight = FontWeight.Bold,
+                        textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null)
+                }
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (task.description.isNotBlank()) {
+                        Text(task.description, color = Color(0xFFBBBBDD), fontSize = 14.sp, lineHeight = 20.sp)
+                        HorizontalDivider(color = Color(0xFF221F3A))
+                    }
+                    // Date
+                    if (task.dueDate != null) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.AccessTime, null, Modifier.size(15.dp), tint = priorityColor)
+                            Spacer(Modifier.width(8.dp))
+                            Text(fmt.format(task.dueDate.toDate()), color = priorityColor, fontSize = 13.sp)
+                        }
+                    }
+                    // Category
+                    if (task.category.isNotBlank()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Label, null, Modifier.size(15.dp), tint = Color(0xFF8888AA))
+                            Spacer(Modifier.width(8.dp))
+                            Text(categoryLabel(task.category), color = Color(0xFFAAAAAA), fontSize = 13.sp)
+                        }
+                    }
+                    // Repeat
+                    if (task.repeatType != "none") {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Repeat, null, Modifier.size(15.dp), tint = Color(0xFF8888AA))
+                            Spacer(Modifier.width(8.dp))
+                            Text(repeatLabel(task.repeatType), color = Color(0xFFAAAAAA), fontSize = 13.sp)
+                        }
+                    }
+                    // Reminder
+                    if (task.dueDate != null) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Notifications, null, Modifier.size(15.dp), tint = Color(0xFF8888AA))
+                            Spacer(Modifier.width(8.dp))
+                            Text(reminderLabel(task.reminderOffset), color = Color(0xFFAAAAAA), fontSize = 13.sp)
+                        }
+                    }
+                    // Priority
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Flag, null, Modifier.size(15.dp), tint = priorityColor)
+                        Spacer(Modifier.width(8.dp))
+                        Text(priorityLabel(task.priority), color = priorityColor, fontSize = 13.sp)
+                    }
+                    // Created at
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Schedule, null, Modifier.size(15.dp), tint = Color(0xFF5555AA))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Создана: ${fmt.format(task.createdAt.toDate())}",
+                            color = Color(0xFF6666AA), fontSize = 12.sp)
+                    }
+                    // Completed by
+                    if (task.isCompleted && task.completedByName != null) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.CheckCircle, null, Modifier.size(15.dp), tint = Color(0xFF39FF14))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Выполнено: ${task.completedByName}", color = Color(0xFF39FF14), fontSize = 13.sp)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                if (!task.isCompleted) {
+                    TextButton(onClick = { onComplete(); showDetailDialog = false }) {
+                        Text("✓ Выполнить", color = Color(0xFF39FF14), fontWeight = FontWeight.Bold)
+                    }
+                } else {
+                    TextButton(onClick = { showDetailDialog = false }) {
+                        Text("Закрыть", color = Color(0xFF8888AA))
+                    }
+                }
+            },
+            dismissButton = {
+                if (!task.isCompleted) {
+                    TextButton(onClick = { showDetailDialog = false }) {
+                        Text("Закрыть", color = Color(0xFF8888AA))
+                    }
+                }
             }
         )
     }
@@ -73,27 +176,29 @@ fun TaskCard(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
                 }
             }
             .clip(RoundedCornerShape(16.dp))
-            .background(
-                if (task.isCompleted) Color(0xFF0A0818) else Color(0xFF100D20)
-            )
+            .background(if (task.isCompleted) Color(0xFF0A0818) else Color(0xFF100D20))
+            .clickable { showDetailDialog = true }  // Fix #2 — открывает детали
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             // Priority neon strip
             Box(
                 Modifier
-                    .width(3.dp)
-                    .height(52.dp)
+                    .width(3.dp).height(52.dp)
                     .clip(RoundedCornerShape(2.dp))
                     .background(priorityColor.copy(alpha = if (task.isCompleted) 0.3f else 0.9f))
             )
             Spacer(Modifier.width(12.dp))
 
-            // Checkbox
+            // Fix #1 — Checkbox работает: помечаем выполненным (onComplete вызывается при клике)
             Checkbox(
                 checked = task.isCompleted,
-                onCheckedChange = { if (!task.isCompleted) onComplete() },
+                onCheckedChange = {
+                    if (!task.isCompleted) onComplete()  // только в одну сторону
+                },
                 colors = CheckboxDefaults.colors(
-                    checkedColor = priorityColor, uncheckedColor = Color(0xFF5555AA), checkmarkColor = Color.Black
+                    checkedColor = priorityColor,
+                    uncheckedColor = Color(0xFF5555AA),
+                    checkmarkColor = Color.Black
                 )
             )
             Spacer(Modifier.width(8.dp))
@@ -113,7 +218,8 @@ fun TaskCard(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
                 }
                 if (task.dueDate != null) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.AccessTime, null, Modifier.size(11.dp), tint = priorityColor.copy(alpha = 0.8f))
+                        Icon(Icons.Default.AccessTime, null, Modifier.size(11.dp),
+                            tint = priorityColor.copy(alpha = 0.8f))
                         Spacer(Modifier.width(3.dp))
                         Text(
                             SimpleDateFormat("d MMM, HH:mm", Locale("ru")).format(task.dueDate.toDate()),
@@ -126,10 +232,43 @@ fun TaskCard(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
                 }
             }
 
+            // Кнопка удаления
             IconButton(onClick = { showDeleteDialog = true }, modifier = Modifier.size(36.dp)) {
                 Icon(Icons.Default.DeleteOutline, "Удалить", Modifier.size(18.dp),
                     tint = Color(0xFFFF2D78).copy(alpha = 0.5f))
             }
         }
     }
+}
+
+private fun categoryLabel(cat: String) = when (cat) {
+    "work"     -> "Работа"
+    "personal" -> "Личное"
+    "health"   -> "Здоровье"
+    "study"    -> "Учёба"
+    "other"    -> "Другое"
+    else       -> cat
+}
+
+private fun repeatLabel(r: String) = when (r) {
+    "daily"   -> "Повторять каждый день"
+    "weekly"  -> "Повторять каждую неделю"
+    "monthly" -> "Повторять каждый месяц"
+    else      -> "Не повторять"
+}
+
+private fun reminderLabel(offset: Int) = when (offset) {
+    0    -> "Напоминание в момент"
+    5    -> "Напоминание за 5 минут"
+    15   -> "Напоминание за 15 минут"
+    30   -> "Напоминание за 30 минут"
+    60   -> "Напоминание за 1 час"
+    1440 -> "Напоминание за 1 день"
+    else -> "Напоминание за $offset мин"
+}
+
+private fun priorityLabel(p: Int) = when (p) {
+    2 -> "Высокий приоритет"
+    1 -> "Средний приоритет"
+    else -> "Низкий приоритет"
 }

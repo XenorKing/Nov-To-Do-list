@@ -26,6 +26,7 @@ import com.novaroject.novtodolist.auth.ui.LoginScreen
 import com.novaroject.novtodolist.auth.ui.RegisterScreen
 import com.novaroject.novtodolist.auth.ui.ResetPasswordScreen
 import com.novaroject.novtodolist.profile.ui.AboutScreen
+import com.novaroject.novtodolist.profile.ui.PrivacyPolicyScreen
 import com.novaroject.novtodolist.profile.ui.ProfileScreen
 import com.novaroject.novtodolist.tasks.ui.AddTaskScreen
 import com.novaroject.novtodolist.tasks.ui.AllTasksScreen
@@ -35,14 +36,15 @@ import com.novaroject.novtodolist.ui.theme.NeonCyan
 import com.novaroject.novtodolist.ui.theme.NeonPurple
 
 sealed class Screen(val route: String) {
-    object Login     : Screen("login")
-    object Register  : Screen("register")
-    object ResetPass : Screen("reset_pass")
-    object Today     : Screen("today")
-    object AllTasks  : Screen("all_tasks")
-    object Profile   : Screen("profile")
-    object About     : Screen("about")
-    object AddTask   : Screen("add_task")
+    object Login         : Screen("login")
+    object Register      : Screen("register")
+    object ResetPass     : Screen("reset_pass")
+    object Today         : Screen("today")
+    object AllTasks      : Screen("all_tasks")
+    object Profile       : Screen("profile")
+    object About         : Screen("about")
+    object AddTask       : Screen("add_task")
+    object PrivacyPolicy : Screen("privacy_policy")  // Fix #5
 }
 
 @Composable
@@ -84,23 +86,25 @@ fun NovToDoApp() {
                 LoginScreen(
                     onLoginSuccess     = { nav.navigate(Screen.Today.route) { popUpTo(0) { inclusive = true } } },
                     onNavigateRegister = { nav.navigate(Screen.Register.route) },
-                    onNavigateReset    = { nav.navigate(Screen.ResetPass.route) }
+                    onNavigateReset    = { nav.navigate(Screen.ResetPass.route) },
+                    onPrivacyPolicy    = { nav.navigate(Screen.PrivacyPolicy.route) }
                 )
             }
             composable(Screen.Register.route) {
                 RegisterScreen(
-                    onRegistered = { nav.navigate(Screen.Today.route) { popUpTo(0) { inclusive = true } } },
-                    onBack       = { nav.popBackStack() }
+                    onRegistered    = { nav.navigate(Screen.Today.route) { popUpTo(0) { inclusive = true } } },
+                    onBack          = { nav.popBackStack() },
+                    onPrivacyPolicy = { nav.navigate(Screen.PrivacyPolicy.route) }
                 )
             }
-            composable(Screen.ResetPass.route) { ResetPasswordScreen(onBack = { nav.popBackStack() }) }
+            composable(Screen.ResetPass.route)     { ResetPasswordScreen(onBack = { nav.popBackStack() }) }
             composable(Screen.Today.route) {
                 TodayTasksScreen(
                     onAddTask     = { nav.navigate(Screen.AddTask.route) },
                     onOpenProfile = { nav.navigate(Screen.Profile.route) }
                 )
             }
-            composable(Screen.AllTasks.route) { AllTasksScreen(onAddTask = { nav.navigate(Screen.AddTask.route) }) }
+            composable(Screen.AllTasks.route)      { AllTasksScreen(onAddTask = { nav.navigate(Screen.AddTask.route) }) }
             composable(Screen.Profile.route) {
                 ProfileScreen(
                     onLogout = { nav.navigate(Screen.Login.route) { popUpTo(0) { inclusive = true } } },
@@ -108,8 +112,9 @@ fun NovToDoApp() {
                     onBack   = { nav.popBackStack() }
                 )
             }
-            composable(Screen.About.route) { AboutScreen(onBack = { nav.popBackStack() }) }
-            composable(Screen.AddTask.route) { AddTaskScreen(onBack = { nav.popBackStack() }) }
+            composable(Screen.About.route)         { AboutScreen(onBack = { nav.popBackStack() }) }
+            composable(Screen.AddTask.route)       { AddTaskScreen(onBack = { nav.popBackStack() }) }
+            composable(Screen.PrivacyPolicy.route) { PrivacyPolicyScreen(onBack = { nav.popBackStack() }) }  // Fix #5
         }
     }
 }
@@ -127,14 +132,9 @@ private fun CyberNavBar(
     ) {
         Box(
             modifier = Modifier
-                .width(270.dp)
-                .height(66.dp)
-                .shadow(
-                    elevation  = 20.dp,
-                    shape      = RoundedCornerShape(33.dp),
-                    ambientColor = NeonPurple.copy(alpha = 0.5f),
-                    spotColor    = NeonCyan.copy(alpha = 0.3f)
-                )
+                .width(270.dp).height(66.dp)
+                .shadow(elevation = 20.dp, shape = RoundedCornerShape(33.dp),
+                    ambientColor = NeonPurple.copy(alpha = 0.5f), spotColor = NeonCyan.copy(alpha = 0.3f))
                 .clip(RoundedCornerShape(33.dp))
                 .background(Color(0xFF0D0B20)),
             contentAlignment = Alignment.Center
@@ -145,21 +145,16 @@ private fun CyberNavBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 NavPillItem(Icons.Default.Home, "Главная", current == Screen.Today.route, onToday)
-
-                // Center + FAB
                 Box(
-                    modifier = Modifier
-                        .size(50.dp)
+                    modifier = Modifier.size(50.dp)
                         .shadow(12.dp, CircleShape, ambientColor = NeonCyan.copy(0.8f), spotColor = NeonCyan.copy(0.8f))
-                        .clip(CircleShape)
-                        .background(NeonCyan),
+                        .clip(CircleShape).background(NeonCyan),
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(onClick = onAddTask, modifier = Modifier.fillMaxSize()) {
                         Icon(Icons.Default.Add, "Добавить", tint = Color.Black, modifier = Modifier.size(28.dp))
                     }
                 }
-
                 NavPillItem(Icons.Default.List, "Задачи", current == Screen.AllTasks.route, onAllTasks)
             }
         }

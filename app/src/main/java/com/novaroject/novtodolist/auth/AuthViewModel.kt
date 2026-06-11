@@ -23,6 +23,9 @@ class AuthViewModel @Inject constructor(
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state
 
+    private val _updateNickResult = MutableStateFlow<String?>(null)
+    val updateNickResult: StateFlow<String?> = _updateNickResult
+
     fun login(email: String, password: String) = viewModelScope.launch {
         _state.value = AuthState(loading = true)
         repo.login(email, password)
@@ -43,6 +46,16 @@ class AuthViewModel @Inject constructor(
             .onSuccess { _state.value = AuthState(success = true) }
             .onFailure { _state.value = AuthState(error = friendlyError(it.message)) }
     }
+
+    // Fix #6 — обновление ника в профиле
+    fun updateNickname(nickname: String) = viewModelScope.launch {
+        _updateNickResult.value = "loading"
+        repo.updateDisplayName(nickname)
+            .onSuccess { _updateNickResult.value = "OK" }
+            .onFailure { _updateNickResult.value = it.message ?: "Ошибка обновления" }
+    }
+
+    fun clearUpdateNickResult() { _updateNickResult.value = null }
 
     private fun friendlyError(msg: String?): String = when {
         msg == null -> "Неизвестная ошибка"

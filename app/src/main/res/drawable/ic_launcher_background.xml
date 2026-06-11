@@ -4,12 +4,7 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Deep dark background -->
-    <path android:fillColor="#0D0B1E" android:pathData="M0,0 L108,0 L108,108 L0,108 Z"/>
-    <!-- Subtle purple glow top-right -->
-    <path android:fillColor="#1A9D00FF"
-          android:pathData="M70,0 L108,0 L108,38 Q108,0 70,0 Z"/>
-    <!-- Subtle cyan glow bottom-left -->
-    <path android:fillColor="#1A00E5FF"
-          android:pathData="M0,70 L0,108 L38,108 Q0,108 0,70 Z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M0,0h108v108h-108z" />
 </vector>

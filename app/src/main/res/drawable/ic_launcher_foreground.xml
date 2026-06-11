@@ -1,33 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Иконка в стиле неонового контура на чёрном фоне.
+    Градиент: cyan → blue → purple → pink → orange → yellow-green
+    (по аналогии с референсным фото)
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Outer glow aura -->
-    <path android:fillColor="#2000E5FF"
-          android:pathData="M20,38 Q20,20 38,20 L70,20 Q88,20 88,38 L88,70 Q88,88 70,88 L38,88 Q20,88 20,70 Z"/>
+    <!-- Чёрный фон -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M0,0 L108,0 L108,108 L0,108 Z" />
 
-    <!-- Dark rounded square background -->
-    <path android:fillColor="#0D0B1E"
-          android:pathData="M24,38 Q24,24 38,24 L70,24 Q84,24 84,38 L84,70 Q84,84 70,84 L38,84 Q24,84 24,70 Z"/>
+    <!-- Градиентные определения через group + color trick:
+         Рисуем контур скруглённого квадрата и "стрелка-бумеранг" внутри
+         через overlapping полосы разных цветов, создавая эффект градиента -->
 
-    <!-- Neon cyan border glow (stroke effect using slightly smaller rect) -->
-    <path android:fillColor="#00000000"
-          android:strokeColor="#4400E5FF"
-          android:strokeWidth="2"
-          android:pathData="M26,38 Q26,26 38,26 L70,26 Q82,26 82,38 L82,70 Q82,82 70,82 L38,82 Q26,82 26,70 Z"/>
+    <!-- ═══ ВНЕШНИЙ КОНТУР (скруглённый квадрат) ════════════════════
+         Разбиваем периметр на 4 дуги по цветам градиента           -->
 
-    <!-- Letter N - bold, neon cyan -->
-    <path android:fillColor="#00E5FF"
-          android:pathData="M32,28 L32,80 L44,80 L44,52 L64,80 L76,80 L76,28 L64,28 L64,56 L44,28 Z"/>
+    <!-- Верхняя сторона: cyan → blue -->
+    <path
+        android:strokeColor="#00EFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M28,18 L80,18" />
+    <!-- Верхний правый угол: blue → purple -->
+    <path
+        android:strokeColor="#7B4CFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M80,18 Q92,18 92,30" />
+    <!-- Правая сторона: purple → pink -->
+    <path
+        android:strokeColor="#DD44FF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M92,30 L92,78" />
+    <!-- Нижний правый угол: pink → orange -->
+    <path
+        android:strokeColor="#FF6622"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M92,78 Q92,90 80,90" />
+    <!-- Нижняя сторона: orange → yellow-green -->
+    <path
+        android:strokeColor="#AAFF00"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M80,90 L28,90" />
+    <!-- Нижний левый угол: yellow-green → cyan -->
+    <path
+        android:strokeColor="#00EFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M28,90 Q16,90 16,78" />
+    <!-- Левая сторона нижняя часть: cyan -->
+    <path
+        android:strokeColor="#00CCFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M16,78 L16,60" />
+    <!-- Разрыв на левой стороне (как на фото) -->
+    <path
+        android:strokeColor="#00BBFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M16,50 L16,30" />
+    <!-- Верхний левый угол: cyan -->
+    <path
+        android:strokeColor="#00EFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M16,30 Q16,18 28,18" />
 
-    <!-- Top-left glow dot (purple) -->
-    <path android:fillColor="#CC9D00FF"
-          android:pathData="M32,28 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"/>
+    <!-- Маленький штрих-разрыв на левой стороне (как на фото — короткий вертикальный отрезок) -->
+    <path
+        android:strokeColor="#00EFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M16,54 L16,58" />
 
-    <!-- Bottom-right glow dot (cyan) -->
-    <path android:fillColor="#CC00E5FF"
-          android:pathData="M76,80 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"/>
+    <!-- ═══ ДИАГОНАЛЬНАЯ ЛИНИЯ (основа стрелки) ══════════════════════
+         От нижнего левого к верхнему правому — cyan → purple         -->
+    <path
+        android:strokeColor="#7B4CFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M26,82 L82,30" />
+
+    <!-- ═══ СТРЕЛКА (треугольник) в центре-правой части ════════════
+         pink → orange                                               -->
+    <!-- Левая сторона треугольника -->
+    <path
+        android:strokeColor="#FF44BB"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M66,36 L46,56" />
+    <!-- Правая / нижняя сторона треугольника -->
+    <path
+        android:strokeColor="#FF6622"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M86,28 L66,36 L76,56" />
+
+    <!-- ═══ НИЖНЯЯ ЛИНИЯ диагонали продолжение (cyan) ════════════ -->
+    <path
+        android:strokeColor="#00EFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M26,82 L68,78" />
+
 </vector>
