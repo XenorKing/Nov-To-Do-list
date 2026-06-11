@@ -1,5 +1,8 @@
 package com.novaroject.novtodolist.auth.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,9 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,7 +38,6 @@ fun RegisterScreen(
     onPrivacyPolicy: () -> Unit = {},
     vm: AuthViewModel = hiltViewModel()
 ) {
-    // Fix #6 — отдельное поле для ника
     var nickname  by remember { mutableStateOf("") }
     var email     by remember { mutableStateOf("") }
     var password  by remember { mutableStateOf("") }
@@ -43,7 +48,12 @@ fun RegisterScreen(
     val state     by vm.state.collectAsState()
     val pwMatch   = password == confirm || confirm.isEmpty()
 
+    val blockedDomains = listOf("mail.ru", "bk.ru", "inbox.ru", "list.ru", "yandex.ru", "ya.ru", "rambler.ru")
+    val emailDomain    = email.substringAfterLast("@", "").lowercase()
+    val isBlockedDomain = emailDomain.isNotBlank() && blockedDomains.any { emailDomain == it }
+
     LaunchedEffect(state.success) { if (state.success) onRegistered() }
+    LaunchedEffect(Unit) { vm.clearError() }
 
     Box(
         modifier = Modifier
@@ -73,7 +83,7 @@ fun RegisterScreen(
             Text("Начните организовывать задачи", fontSize = 14.sp, color = Color(0xFF8888AA))
             Spacer(Modifier.height(36.dp))
 
-            // ─── Ник (Fix #6) ───
+            // ─── Никнейм ───
             CyberField(
                 value = nickname, onValueChange = { nickname = it },
                 placeholder = { Text("Никнейм (отображается в задачах)") },
@@ -87,6 +97,26 @@ fun RegisterScreen(
                 leadingIcon = { Icon(Icons.Default.Email, null, modifier = Modifier.size(20.dp)) },
                 keyboardType = KeyboardType.Email
             )
+
+            // ─── Предупреждение домена (как в novAnime) ───
+            AnimatedVisibility(
+                visible = isBlockedDomain,
+                enter = fadeIn(), exit = fadeOut()
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color(0xFFFF6B35).copy(alpha = 0.12f)
+                ) {
+                    Text(
+                        "Письма Firebase могут не приходить на $emailDomain. Рекомендуем использовать Gmail.",
+                        color = Color(0xFFFF6B35),
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
+                    )
+                }
+            }
+
             Spacer(Modifier.height(14.dp))
 
             CyberField(
@@ -122,10 +152,43 @@ fun RegisterScreen(
             )
 
             if (!pwMatch) {
-                Text("Пароли не совпадают", color = Color(0xFFFF2D78), fontSize = 11.sp,
-                    modifier = Modifier.align(Alignment.Start).padding(start = 8.dp, top = 4.dp))
+                Text(
+                    "Пароли не совпадают", color = Color(0xFFFF2D78), fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start = 8.dp, top = 4.dp)
+                )
             }
+
             Spacer(Modifier.height(16.dp))
+
+            // ─── Ошибка ───
+            AnimatedVisibility(
+                visible = state.error != null,
+                enter = fadeIn(), exit = fadeOut()
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color(0xFFFF2D78).copy(alpha = 0.1f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.ErrorOutline, null, Modifier.size(16.dp), tint = Color(0xFFFF2D78))
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            state.error ?: "",
+                            color = Color(0xFFFF2D78),
+                            fontSize = 13.sp,
+                            modifier = Modifier.weight(1f),
+                            lineHeight = 18.sp
+                        )
+                        IconButton(onClick = { vm.clearError() }, modifier = Modifier.size(20.dp)) {
+                            Icon(Icons.Default.Close, null, Modifier.size(14.dp), tint = Color(0xFF8888AA))
+                        }
+                    }
+                }
+            }
 
             // ─── Политика конфиденциальности ───
             Row(
@@ -142,16 +205,35 @@ fun RegisterScreen(
                         checkedColor = NeonPurple, uncheckedColor = Color(0xFF6666AA), checkmarkColor = Color.White
                     )
                 )
-                Text("Я согласен с ", color = Color(0xFF8888AA), fontSize = 13.sp)
+                val annotated = buildAnnotatedString {
+                    withStyle(SpanStyle(color = Color(0xFF8888AA), fontSize = 13.sp)) {
+                        append("Я согласен с ")
+                    }
+                    withStyle(SpanStyle(
+                        color = NeonPurple, fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold, textDecoration = TextDecoration.Underline
+                    )) {
+                        append("Политикой конфиденциальности")
+                    }
+                }
                 TextButton(onClick = onPrivacyPolicy, contentPadding = PaddingValues(0.dp)) {
-                    Text("Политикой конфиденциальности", color = NeonPurple, fontSize = 13.sp)
+                    Text(annotated)
                 }
             }
 
-            state.error?.let {
-                Text(it, color = Color(0xFFFF2D78), fontSize = 12.sp,
-                    textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 8.dp))
+            AnimatedVisibility(
+                visible = nickname.isNotBlank() && email.isNotBlank() &&
+                        password.length >= 6 && password == confirm && !agreed,
+                enter = fadeIn(), exit = fadeOut()
+            ) {
+                Text(
+                    "Отметьте согласие с политикой конфиденциальности",
+                    color = NeonPurple.copy(alpha = 0.8f),
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                )
             }
+
             Spacer(Modifier.height(18.dp))
 
             // ─── Кнопка Зарегистрироваться ───
