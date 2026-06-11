@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import com.novaroject.novtodolist.ui.theme.DarkBg
 import com.novaroject.novtodolist.ui.theme.NeonCyan
 import com.novaroject.novtodolist.ui.theme.NeonPurple
-import com.novaroject.novtodolist.ui.theme.NeonPurple
 
 // Fix #5 — Политика конфиденциальности
 @Composable
