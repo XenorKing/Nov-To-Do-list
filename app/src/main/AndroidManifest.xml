@@ -54,6 +54,12 @@
             </intent-filter>
         </receiver>
 
+        <!--
+            Отключаем авто-инициализацию WorkManager через androidx.startup,
+            чтобы НovToDoApp.workManagerConfiguration (с HiltWorkerFactory) был
+            единственной точкой инициализации — иначе @HiltWorker не получают
+            зависимости и уведомления тихо теряются.
+        -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
@@ -61,7 +67,8 @@
             tools:node="merge">
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
-                android:value="androidx.startup" />
+                android:value="androidx.startup"
+                tools:node="remove" />
         </provider>
 
     </application>
