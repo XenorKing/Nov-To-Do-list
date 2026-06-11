@@ -225,8 +225,7 @@ fun ProfileScreen(
             Spacer(Modifier.height(14.dp))
 
             // ─── О приложении ───
-            Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp),
-                color = Color(0xFF100D20), onClick = onAbout) {
+            Surface(onClick = onAbout, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), color = Color(0xFF100D20)) {
                 ListItem(
                     headlineContent = { Text("О приложении", fontWeight = FontWeight.Medium, color = Color.White) },
                     leadingContent = {
