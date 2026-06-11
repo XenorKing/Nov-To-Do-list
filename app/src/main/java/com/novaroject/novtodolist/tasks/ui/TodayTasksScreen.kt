@@ -146,10 +146,10 @@ fun TodayTasksScreen(
         TextField(
             value = search, onValueChange = { search = it },
             placeholder = { Text("Поиск задач...", color = Color(0xFF5555AA), fontSize = 14.sp) },
-            leadingIcon = { Icon(Icons.Default.Search, null, tint = Color(0xFF5555AA), Modifier.size(20.dp)) },
+            leadingIcon = { Icon(Icons.Default.Search, null, tint = Color(0xFF5555AA), modifier = Modifier.size(20.dp)) },
             trailingIcon = {
                 if (search.isNotEmpty()) IconButton({ search = "" }) {
-                    Icon(Icons.Default.Clear, null, tint = Color(0xFF5555AA), Modifier.size(18.dp))
+                    Icon(Icons.Default.Clear, null, tint = Color(0xFF5555AA), modifier = Modifier.size(18.dp))
                 }
             },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)
