@@ -127,7 +127,7 @@ fun AllTasksScreen(onAddTask: () -> Unit, vm: TaskViewModel = hiltViewModel()) {
                     )
                     Spacer(Modifier.width(10.dp))
                     Text(
-                        state.error,
+                        state.error ?: "",
                         color = Color(0xFFFF2D78), fontSize = 12.sp,
                         modifier = Modifier.weight(1f), lineHeight = 16.sp
                     )
