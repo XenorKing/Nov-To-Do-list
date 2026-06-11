@@ -4,14 +4,30 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FF00E5FF"
-        android:pathData="M54,20 C54,20 36,32 36,50 C36,62 44,70 54,72 C64,70 72,62 72,50 C72,32 54,20 54,20Z"/>
-    <path
-        android:fillColor="#FF7B61FF"
-        android:pathData="M42,52 L50,60 L68,40"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="4"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"/>
+
+    <!-- Outer glow aura -->
+    <path android:fillColor="#2000E5FF"
+          android:pathData="M20,38 Q20,20 38,20 L70,20 Q88,20 88,38 L88,70 Q88,88 70,88 L38,88 Q20,88 20,70 Z"/>
+
+    <!-- Dark rounded square background -->
+    <path android:fillColor="#0D0B1E"
+          android:pathData="M24,38 Q24,24 38,24 L70,24 Q84,24 84,38 L84,70 Q84,84 70,84 L38,84 Q24,84 24,70 Z"/>
+
+    <!-- Neon cyan border glow (stroke effect using slightly smaller rect) -->
+    <path android:fillColor="#00000000"
+          android:strokeColor="#4400E5FF"
+          android:strokeWidth="2"
+          android:pathData="M26,38 Q26,26 38,26 L70,26 Q82,26 82,38 L82,70 Q82,82 70,82 L38,82 Q26,82 26,70 Z"/>
+
+    <!-- Letter N - bold, neon cyan -->
+    <path android:fillColor="#00E5FF"
+          android:pathData="M32,28 L32,80 L44,80 L44,52 L64,80 L76,80 L76,28 L64,28 L64,56 L44,28 Z"/>
+
+    <!-- Top-left glow dot (purple) -->
+    <path android:fillColor="#CC9D00FF"
+          android:pathData="M32,28 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"/>
+
+    <!-- Bottom-right glow dot (cyan) -->
+    <path android:fillColor="#CC00E5FF"
+          android:pathData="M76,80 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"/>
 </vector>

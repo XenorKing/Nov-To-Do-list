@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -13,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
@@ -21,10 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.novaroject.novtodolist.auth.AuthViewModel
-
-private val Purple = Color(0xFF7B5CF5)
-private val Cyan   = Color(0xFF00D4E8)
-private val FieldBg = Color(0xFF1E1A2E)
+import com.novaroject.novtodolist.ui.theme.DarkBg
+import com.novaroject.novtodolist.ui.theme.NeonCyan
+import com.novaroject.novtodolist.ui.theme.NeonPurple
 
 @Composable
 fun LoginScreen(
@@ -40,152 +39,97 @@ fun LoginScreen(
 
     LaunchedEffect(state.success) { if (state.success) onLoginSuccess() }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF12101E))
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 28.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(
+                Brush.verticalGradient(listOf(Color(0xFF060412), DarkBg, Color(0xFF0A0520)))
+            )
     ) {
-        Spacer(Modifier.height(72.dp))
-
-        // ── Logo ──
-        Box(
+        Column(
             modifier = Modifier
-                .size(84.dp)
-                .clip(RoundedCornerShape(22.dp))
-                .background(Color(0xFF1C1830)),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "N",
-                fontSize = 42.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Cyan
+            Spacer(Modifier.height(72.dp))
+
+            Box(
+                modifier = Modifier
+                    .size(86.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color(0xFF0E0C1C)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("N", fontSize = 44.sp, fontWeight = FontWeight.ExtraBold, color = NeonCyan)
+            }
+
+            Spacer(Modifier.height(22.dp))
+            Text("novTo-Do List", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Spacer(Modifier.height(6.dp))
+            Text("Войдите в свой аккаунт", fontSize = 14.sp, color = Color(0xFF8888AA))
+
+            Spacer(Modifier.height(44.dp))
+
+            CyberField(
+                value = email, onValueChange = { email = it },
+                placeholder = { Text("Email") },
+                leadingIcon = { Icon(Icons.Default.Email, null, modifier = Modifier.size(20.dp)) },
+                keyboardType = KeyboardType.Email
             )
-        }
+            Spacer(Modifier.height(14.dp))
 
-        Spacer(Modifier.height(20.dp))
-        Text(
-            "novTo-Do List",
-            fontSize = 26.sp, fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            "Войдите в свой аккаунт",
-            fontSize = 14.sp, color = Color(0xFF8A8A9A)
-        )
+            CyberField(
+                value = password, onValueChange = { password = it },
+                placeholder = { Text("Пароль") },
+                leadingIcon = { Icon(Icons.Default.Lock, null, modifier = Modifier.size(20.dp)) },
+                trailingIcon = {
+                    IconButton(onClick = { pwVisible = !pwVisible }) {
+                        Icon(if (pwVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility, null,
+                            modifier = Modifier.size(20.dp))
+                    }
+                },
+                visualTransformation = if (pwVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardType = KeyboardType.Password
+            )
 
-        Spacer(Modifier.height(40.dp))
-
-        // ── Email field ──
-        NovTextField(
-            value = email, onValueChange = { email = it },
-            placeholder = "Email",
-            leadingIcon = { Icon(Icons.Default.Email, null, tint = Color(0xFF8A8A9A), modifier = Modifier.size(20.dp)) },
-            keyboardType = KeyboardType.Email
-        )
-        Spacer(Modifier.height(12.dp))
-
-        // ── Password field ──
-        NovTextField(
-            value = password, onValueChange = { password = it },
-            placeholder = "Пароль",
-            leadingIcon = { Icon(Icons.Default.Lock, null, tint = Color(0xFF8A8A9A), modifier = Modifier.size(20.dp)) },
-            trailingIcon = {
-                IconButton(onClick = { pwVisible = !pwVisible }) {
-                    Icon(
-                        if (pwVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        null, tint = Color(0xFF8A8A9A), modifier = Modifier.size(20.dp)
-                    )
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                TextButton(onClick = onNavigateReset) {
+                    Text("Забыли пароль?", color = NeonPurple, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                 }
-            },
-            visualTransformation = if (pwVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardType = KeyboardType.Password
-        )
-
-        // ── Forgot password ──
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-            TextButton(onClick = onNavigateReset) {
-                Text("Забыли пароль?", color = Purple, fontWeight = FontWeight.Medium, fontSize = 13.sp)
             }
-        }
 
-        // ── Error ──
-        state.error?.let {
-            Text(
-                it, color = MaterialTheme.colorScheme.error,
-                fontSize = 12.sp, textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        // ── Login button ──
-        Button(
-            onClick = { vm.login(email, password) },
-            modifier = Modifier.fillMaxWidth().height(52.dp),
-            enabled = !state.loading && email.isNotBlank() && password.isNotBlank(),
-            shape = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Purple,
-                disabledContainerColor = Color(0xFF2D2845)
-            )
-        ) {
-            if (state.loading)
-                CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp, color = Color.White)
-            else
-                Text("Войти", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.White)
-        }
-
-        Spacer(Modifier.height(28.dp))
-
-        // ── Sign up row ──
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Нет аккаунта?", color = Color(0xFF8A8A9A), fontSize = 14.sp)
-            TextButton(onClick = onNavigateRegister, contentPadding = PaddingValues(start = 4.dp)) {
-                Text("Зарегистрироваться", color = Purple, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+            state.error?.let {
+                Text(it, color = Color(0xFFFF2D78), fontSize = 12.sp,
+                    textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 4.dp))
             }
-        }
 
-        Spacer(Modifier.height(60.dp))
+            Spacer(Modifier.height(8.dp))
+
+            Button(
+                onClick = { vm.login(email, password) },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                enabled = !state.loading && email.isNotBlank() && password.isNotBlank(),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = NeonPurple,
+                    disabledContainerColor = Color(0xFF2A1A45)
+                )
+            ) {
+                if (state.loading) CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = Color.White)
+                else Text("Войти", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
+            }
+
+            Spacer(Modifier.height(28.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Нет аккаунта?", color = Color(0xFF8888AA), fontSize = 14.sp)
+                TextButton(onClick = onNavigateRegister, contentPadding = PaddingValues(start = 4.dp)) {
+                    Text("Зарегистрироваться", color = NeonPurple, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                }
+            }
+            Spacer(Modifier.height(40.dp))
+        }
     }
-}
-
-@Composable
-internal fun NovTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardType: KeyboardType = KeyboardType.Text
-) {
-    val Purple = Color(0xFF7B5CF5)
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = { Text(placeholder, color = Color(0xFF6A6A7A), fontSize = 14.sp) },
-        leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon,
-        visualTransformation = visualTransformation,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp)),
-        singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor   = Color(0xFF1E1A2E),
-            unfocusedContainerColor = Color(0xFF1A1728),
-            focusedIndicatorColor   = Purple,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor        = Color.White,
-            unfocusedTextColor      = Color.White,
-            cursorColor             = Purple
-        )
-    )
 }

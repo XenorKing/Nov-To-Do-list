@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: Build Debug & Release APK
+    name: Build Release APK
     runs-on: ubuntu-latest
 
     steps:
@@ -29,95 +29,51 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Set up google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
+          fi
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        run: ./gradlew assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
 
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: novtodolist-debug-${{ github.run_number }}
-          path: app/build/outputs/apk/debug/*.apk
-          retention-days: 30
-
-      - name: Upload Release APK
+      - name: Upload Release APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: novtodolist-release-${{ github.run_number }}
           path: app/build/outputs/apk/release/*.apk
-          retention-days: 30
 
   release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    permissions:
-      contents: write
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon
-
-      - name: Get version name
-        id: version
-        run: |
-          VERSION=$(grep "versionName" app/build.gradle.kts | head -1 | sed 's/.*"\(.*\)".*/\1/')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          name: novtodolist-release-${{ github.run_number }}
+          path: apk/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.version }}-build${{ github.run_number }}
-          name: "novTo-Do List v${{ steps.version.outputs.version }} (Build ${{ github.run_number }})"
+          tag_name: v1.0.0-build${{ github.run_number }}
+          name: "novTo-Do List v1.0.0 (Build ${{ github.run_number }})"
           body: |
-            ## novTo-Do List
-
-            Автоматическая сборка из ветки `main`.
-
-            ### Изменения
-            - Commit: ${{ github.sha }}
-            - Branch: ${{ github.ref_name }}
-
-            ### Установка
-            Скачайте APK и установите на Android 8.0+
-          files: app/build/outputs/apk/release/*.apk
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            ## novTo-Do List — Cyberpunk 2026 Release
+            
+            ### Что нового
+            - 🎨 Полный редизайн в стиле киберпанк 2026 (неоновые цвета, анимации)
+            - ✨ Анимированная обводка полей авторизации (sweep-анимация по кругу)
+            - 🔮 Плавающая нав-панель (3 кнопки: Главная / + / Все задачи)
+            - ⏰ Выбор точного времени при создании задачи
+            - 🐛 Исправлено создание задач (теперь показывает ошибку если что-то пошло не так)
+            - 📱 Экран «О приложении» в стиле NovAnime
+            - 🌟 Новая иконка приложения с неоновым свечением
+          files: apk/*.apk
+          token: ${{ secrets.GITHUB_TOKEN }}

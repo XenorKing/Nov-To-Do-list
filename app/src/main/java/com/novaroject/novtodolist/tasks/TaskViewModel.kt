@@ -29,6 +29,9 @@ class TaskViewModel @Inject constructor(
     private val _all = MutableStateFlow(TasksUiState())
     val allState: StateFlow<TasksUiState> = _all
 
+    private val _addResult = MutableStateFlow<String?>(null)
+    val addResult: StateFlow<String?> = _addResult.asStateFlow()
+
     init {
         viewModelScope.launch {
             repo.getTodayTasks()
@@ -52,8 +55,13 @@ class TaskViewModel @Inject constructor(
 
     fun addTask(title: String, description: String, dueDate: Timestamp?, priority: Int) =
         viewModelScope.launch {
+            _addResult.value = null
             repo.addTask(Task(title = title, description = description, dueDate = dueDate, priority = priority))
+                .onSuccess { _addResult.value = "OK" }
+                .onFailure { _addResult.value = it.message ?: "Ошибка сохранения задачи" }
         }
+
+    fun clearAddResult() { _addResult.value = null }
 
     fun completeTask(id: String) = viewModelScope.launch {
         val name = auth.currentUser?.displayName ?: "Пользователь"
