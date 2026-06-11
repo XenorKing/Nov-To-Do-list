@@ -156,7 +156,7 @@ fun TodayTasksScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.ErrorOutline, null,
+                        Icons.Default.Error, null,
                         tint = Color(0xFFFF2D78), modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(10.dp))
