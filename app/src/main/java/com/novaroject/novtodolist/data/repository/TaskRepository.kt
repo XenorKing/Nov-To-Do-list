@@ -75,16 +75,19 @@ class TaskRepository @Inject constructor(
 
     suspend fun updateTask(task: Task): Result<Unit> = runCatching {
         col().document(task.id).set(task).await()
+        Unit
     }.mapToRussianError()
 
     suspend fun deleteTask(id: String): Result<Unit> = runCatching {
         col().document(id).delete().await()
+        Unit
     }.mapToRussianError()
 
     suspend fun completeTask(id: String, byName: String): Result<Unit> = runCatching {
         col().document(id).update(
             mapOf("isCompleted" to true, "completedBy" to uid, "completedByName" to byName)
         ).await()
+        Unit
     }.mapToRussianError()
 }
 
