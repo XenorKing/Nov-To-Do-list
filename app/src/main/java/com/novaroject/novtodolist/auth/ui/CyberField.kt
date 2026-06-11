@@ -3,6 +3,7 @@ package com.novaroject.novtodolist.auth.ui
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,8 @@ fun CyberField(
     trailingIcon: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = true,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -55,7 +59,8 @@ fun CyberField(
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         visualTransformation = visualTransformation,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+        keyboardActions = keyboardActions,
         interactionSource = interactionSource,
         singleLine = singleLine,
         modifier = modifier
@@ -66,14 +71,12 @@ fun CyberField(
                     val cr = 16.dp.toPx()
                     val tl = Offset(sw / 2f, sw / 2f)
                     val sz = Size(size.width - sw, size.height - sw)
-                    // glow
                     drawRoundRect(
                         color = CF_Purple.copy(alpha = 0.18f * focusAnim),
                         topLeft = tl, size = sz,
                         cornerRadius = CornerRadius(cr),
                         style = Stroke(width = sw * 6f)
                     )
-                    // sweeping arc
                     withTransform({
                         rotate(sweep * focusAnim, Offset(size.width / 2f, size.height / 2f))
                     }) {
@@ -94,16 +97,16 @@ fun CyberField(
                 }
             },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor    = Color(0xFF14112A),
-            unfocusedContainerColor  = Color(0xFF0E0C1C),
-            focusedIndicatorColor    = Color.Transparent,
-            unfocusedIndicatorColor  = Color.Transparent,
-            focusedTextColor         = Color.White,
-            unfocusedTextColor       = Color(0xFFCCCCDD),
-            cursorColor              = CF_Cyan,
-            focusedPlaceholderColor  = Color(0xFF5555AA),
+            focusedContainerColor     = Color(0xFF14112A),
+            unfocusedContainerColor   = Color(0xFF0E0C1C),
+            focusedIndicatorColor     = Color.Transparent,
+            unfocusedIndicatorColor   = Color.Transparent,
+            focusedTextColor          = Color.White,
+            unfocusedTextColor        = Color(0xFFCCCCDD),
+            cursorColor               = CF_Cyan,
+            focusedPlaceholderColor   = Color(0xFF5555AA),
             unfocusedPlaceholderColor = Color(0xFF4A4A7A),
-            focusedLeadingIconColor  = CF_Cyan.copy(alpha = 0.9f),
+            focusedLeadingIconColor   = CF_Cyan.copy(alpha = 0.9f),
             unfocusedLeadingIconColor = Color(0xFF6666AA),
             focusedTrailingIconColor  = Color(0xFFAAAACC),
             unfocusedTrailingIconColor = Color(0xFF666688),
