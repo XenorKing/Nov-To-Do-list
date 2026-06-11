@@ -130,7 +130,7 @@ fun TodayTasksScreen(
                         OutlinedButton(
                             onClick = onAddTask,
                             shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedButtonDefaults.outlinedButtonColors(contentColor = NeonCyan),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = NeonCyan),
                             border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.4f))
                         ) { Text("+ Добавить задачу") }
                     }

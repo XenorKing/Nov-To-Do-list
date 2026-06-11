@@ -181,7 +181,7 @@ fun AddTaskScreen(onBack: () -> Unit, vm: TaskViewModel = hiltViewModel()) {
                 OutlinedButton(
                     onClick = { showDatePicker = true },
                     modifier = Modifier.weight(1f), shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedButtonDefaults.outlinedButtonColors(contentColor = NeonCyan),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = NeonCyan),
                     border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF221F3A))
                 ) {
                     Icon(Icons.Default.CalendarToday, null, Modifier.size(16.dp))
@@ -197,7 +197,7 @@ fun AddTaskScreen(onBack: () -> Unit, vm: TaskViewModel = hiltViewModel()) {
                 OutlinedButton(
                     onClick = { showTimePicker = true },
                     modifier = Modifier.weight(1f), shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedButtonDefaults.outlinedButtonColors(
+                    colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = if (hasTime) NeonPurple else Color(0xFF6666AA)),
                     border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF221F3A))
                 ) {
