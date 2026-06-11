@@ -152,6 +152,7 @@ fun LoginScreen(
                 placeholder = { Text("Email") },
                 leadingIcon = { Icon(Icons.Default.Email, null, modifier = Modifier.size(20.dp)) },
                 keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
             Spacer(Modifier.height(14.dp))
@@ -170,6 +171,7 @@ fun LoginScreen(
                 },
                 visualTransformation = if (pwVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done,
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
                     if (email.isNotBlank() && password.isNotBlank()) vm.login(email, password)
